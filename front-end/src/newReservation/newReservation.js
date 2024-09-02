@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 function NewReservation() {
-  //   const navigate = useNavigate();
+  const history = useHistory();
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -22,8 +22,9 @@ function NewReservation() {
     event.preventDefault();
 
     try {
+      // TODO update handleSubmit to actually submit data to API
       console.log(formData);
-      //   navigate(`/dashboard/${formData.reservation_date}`);
+      history.push(`/dashboard/${formData.reservation_date}`);
     } catch (error) {
       console.error("Error creating new reservation:", error);
     }
