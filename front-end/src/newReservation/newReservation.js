@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 function NewReservation() {
   const history = useHistory();
@@ -89,9 +89,13 @@ function NewReservation() {
           required
         ></input>
         <br />
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-primary my-3 mr-3">
           Submit
         </button>
+        {/* TODO set Link to previous page instead of dashboard  */}
+        <Link to="/dashboard" className="btn btn-secondary my-3">
+          Cancel
+        </Link>
       </form>
     </main>
   );
