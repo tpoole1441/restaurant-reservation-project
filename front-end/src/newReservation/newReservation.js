@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
+import { createReservation } from "../utils/api";
 
 function NewReservation() {
   const history = useHistory();
@@ -22,8 +23,8 @@ function NewReservation() {
     event.preventDefault();
 
     try {
-      // TODO update handleSubmit to actually submit data to API
       console.log(formData);
+      await createReservation(formData);
       history.push(`/dashboard/${formData.reservation_date}`);
     } catch (error) {
       console.error("Error creating new reservation:", error);
@@ -85,6 +86,16 @@ function NewReservation() {
           name="reservation_time"
           placeholder="HH:MM"
           pattern="[0-9]{2}:[0-9]{2}"
+          onChange={handleChange}
+          required
+        ></input>
+        <br />
+        <label>Number of people in party</label>
+        <br />
+        <input
+          type="number"
+          id="people"
+          name="people"
           onChange={handleChange}
           required
         ></input>
