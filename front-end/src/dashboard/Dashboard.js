@@ -17,14 +17,14 @@ function Dashboard() {
   const history = useHistory();
   const queryParams = new URLSearchParams(location.search);
   const dateFromQuery = queryParams.get("date");
-  const [currentDate, setCurrentDate] = useState(dateFromQuery || today());
+  const [date, setDate] = useState(dateFromQuery || today());
 
-  useEffect(loadDashboard, [currentDate]);
+  useEffect(loadDashboard, [date]);
 
   function loadDashboard() {
     const abortController = new AbortController();
     setReservationsError(null);
-    listReservations({ currentDate }, abortController.signal)
+    listReservations({ date }, abortController.signal)
       .then(setReservations)
       .catch(setReservationsError);
     return () => abortController.abort();
@@ -33,28 +33,28 @@ function Dashboard() {
   const setDateToday = (event) => {
     event.preventDefault();
     history.push(`/dashboard?date=${today()}`);
-    setCurrentDate(today());
+    setDate(today());
   };
 
   const setDatePrevious = (event) => {
     event.preventDefault();
-    const previousDate = previous(currentDate);
+    const previousDate = previous(date);
     history.push(`/dashboard?date=${previousDate}`);
-    setCurrentDate(previousDate);
+    setDate(previousDate);
   };
 
   const setDateNext = (event) => {
     event.preventDefault();
-    const nextDate = next(currentDate);
+    const nextDate = next(date);
     history.push(`/dashboard?date=${nextDate}`);
-    setCurrentDate(nextDate);
+    setDate(nextDate);
   };
 
   return (
     <main>
       <h1>Dashboard</h1>
       <div className="d-md-flex mb-3">
-        <h4 className="mb-0">Reservations for {currentDate}</h4>
+        <h4 className="mb-0">Reservations for {date}</h4>
       </div>
       <div>
         <button onClick={setDatePrevious} className="btn btn-secondary my-3">
@@ -68,7 +68,28 @@ function Dashboard() {
         </button>
       </div>
       <ErrorAlert error={reservationsError} />
-      {JSON.stringify(reservations)}
+      {reservations.map(
+        ({
+          reservation_id,
+          first_name,
+          last_name,
+          mobile_number,
+          reservation_date,
+          reservation_time,
+          people,
+        }) => (
+          <div className="card my-3" key={reservation_id}>
+            <div className="card-body">
+              <h3 className="card-title">
+                {first_name} {last_name} - {people}
+              </h3>
+              <p className="card-text">Mobile number: {mobile_number}</p>
+              <p className="card-text">Reservation Date: {reservation_date}</p>
+              <p className="card-text">Reservation Time: {reservation_time}</p>
+            </div>
+          </div>
+        )
+      )}
     </main>
   );
 }
