@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useHistory } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import { today, previous, next } from "../utils/date-time";
 import { listReservations } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
