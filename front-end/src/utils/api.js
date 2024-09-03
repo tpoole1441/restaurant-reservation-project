@@ -32,7 +32,7 @@ headers.append("Content-Type", "application/json");
 async function fetchJson(url, options, onCancel) {
   try {
     const response = await fetch(url, options);
-
+    console.log(response);
     if (response.status === 204) {
       return null;
     }
@@ -80,9 +80,12 @@ export async function listReservations(params, signal) {
 
 export async function createReservation(reservation, signal) {
   const url = `${API_BASE_URL}/reservations/new`;
+  // console.log(url, reservation);
   const options = {
     method: "POST",
-    headers,
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(reservation),
     signal,
   };

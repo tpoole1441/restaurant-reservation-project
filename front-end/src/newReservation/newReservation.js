@@ -10,6 +10,7 @@ function NewReservation() {
     mobile_number: "",
     reservation_date: "",
     reservation_time: "",
+    people: "",
   });
 
   const handleChange = (event) => {
@@ -61,7 +62,8 @@ function NewReservation() {
           type="text"
           id="mobile_number"
           name="mobile_number"
-          pattern="[0-9]{10}"
+          pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+          placeholder="555-555-5555"
           onChange={handleChange}
           required
         ></input>
