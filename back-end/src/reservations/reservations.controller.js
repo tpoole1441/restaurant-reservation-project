@@ -75,6 +75,26 @@ function validateReservationData(req, res, next) {
     });
   }
 
+  const reservationDate = new Date(reservation_date + "T00:00:00Z");
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+
+  if (reservationDate.getUTCDay() === 2) {
+    return next({
+      status: 400,
+      message:
+        "The restaurant is closed on Tuesdays. Please choose a different date.",
+    });
+  }
+
+  if (reservationDate < today) {
+    return next({
+      status: 400,
+      message:
+        "The reservation date cannot be in the past. Please choose a future date.",
+    });
+  }
+
   next();
 }
 

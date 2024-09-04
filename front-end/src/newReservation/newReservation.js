@@ -13,6 +13,8 @@ function NewReservation() {
     people: 0,
   });
 
+  const [error, setError] = useState(null);
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({
@@ -23,6 +25,31 @@ function NewReservation() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const reservationDate = new Date(formData.reservation_date + "T00:00:00Z");
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+
+    const errors = [];
+
+    if (reservationDate.getUTCDay() === 2) {
+      errors.push(
+        "The restaurant is closed on Tuesdays. Please choose a different date."
+      );
+    }
+
+    if (reservationDate < today) {
+      errors.push(
+        "The reservation date cannot be in the past. Please choose a future date."
+      );
+    }
+
+    if (errors.length > 0) {
+      setError(errors.join(" "));
+      return;
+    }
+
+    setError(null);
 
     try {
       await createReservation(formData);
@@ -39,6 +66,7 @@ function NewReservation() {
   return (
     <main>
       <h1>New Reservation</h1>
+      {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>
         <label>First Name</label>
         <br />
