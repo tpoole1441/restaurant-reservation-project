@@ -35,6 +35,49 @@ function hasOnlyValidProperties(req, res, next) {
   next();
 }
 
+function isValidDate(dateString) {
+  const date = new Date(dateString);
+  return date instanceof Date && !isNaN(date);
+}
+
+function isValidTime(timeString) {
+  const timePattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
+  return timePattern.test(timeString);
+}
+
+function isValidNumber(value) {
+  return Number.isInteger(value) && value > 0;
+}
+
+function validateReservationData(req, res, next) {
+  const { data = {} } = req.body;
+
+  const { reservation_date, reservation_time, people } = data;
+
+  if (!isValidDate(reservation_date)) {
+    return next({
+      status: 400,
+      message: `Invalid reservation_date: ${reservation_date}`,
+    });
+  }
+
+  if (!isValidTime(reservation_time)) {
+    return next({
+      status: 400,
+      message: `Invalid reservation_time: ${reservation_time}`,
+    });
+  }
+
+  if (!isValidNumber(people)) {
+    return next({
+      status: 400,
+      message: `Invalid people count: ${people}`,
+    });
+  }
+
+  next();
+}
+
 async function list(req, res) {
   const date = req.query.date;
   const data = await reservationsService.list(date);
@@ -50,6 +93,7 @@ module.exports = {
   list: asyncErrorBoundary(list),
   create: [
     hasOnlyValidProperties,
+    validateReservationData,
     hasRequiredProperties,
     asyncErrorBoundary(create),
   ],
