@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const { setDefaultOptions } = require('expect-puppeteer');
+const { setDefaultOptions } = require("expect-puppeteer");
 const fs = require("fs");
 const fsPromises = fs.promises;
 
@@ -35,12 +35,12 @@ describe("US-02 - Create reservation on a future, working date - E2E", () => {
     beforeEach(async () => {
       await page.type("input[name=first_name]", "John");
       await page.type("input[name=last_name]", "Doe");
-      await page.type("input[name=mobile_number]", "1234567890");
+      await page.type("input[name=mobile_number]", "123-456-7890");
       await page.type("input[name=people]", "3");
     });
 
     test("displays an error message if the date of the reservation occurs in the past", async () => {
-      await page.type("input[name=reservation_date]", "12242020");
+      await page.type("input[name=reservation_date]", "2020-12-24");
       await page.type("input[name=reservation_time]", "05:30PM");
 
       await page.screenshot({
@@ -58,7 +58,7 @@ describe("US-02 - Create reservation on a future, working date - E2E", () => {
     });
 
     test("displays an error message if reservation date falls on a Tuesday", async () => {
-      await page.type("input[name=reservation_date]", "02062035");
+      await page.type("input[name=reservation_date]", "2035-02-06");
       await page.type("input[name=reservation_time]", "05:30PM");
 
       await page.screenshot({
