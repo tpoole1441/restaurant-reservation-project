@@ -25,7 +25,7 @@ function NewReservation() {
 
     try {
       await createReservation(formData);
-      history.push(`/dashboard/${formData.reservation_date}`);
+      history.push(`/dashboard/?date=${formData.reservation_date}`);
     } catch (error) {
       console.error("Error creating new reservation:", error);
     }
@@ -74,11 +74,11 @@ function NewReservation() {
         <label>Reservation Date</label>
         <br />
         <input
-          type="date"
+          type="text"
           id="reservation_date"
           name="reservation_date"
           placeholder="YYYY-MM-DD"
-          pattern="\d{4}-\d{2}\d{2}"
+          pattern="\d{4}-\d{2}-\d{2}"
           onChange={handleChange}
           required
         ></input>
