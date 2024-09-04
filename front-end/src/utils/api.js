@@ -32,7 +32,7 @@ headers.append("Content-Type", "application/json");
 async function fetchJson(url, options, onCancel) {
   try {
     const response = await fetch(url, options);
-    console.log(response);
+
     if (response.status === 204) {
       return null;
     }
@@ -45,7 +45,7 @@ async function fetchJson(url, options, onCancel) {
     return payload.data;
   } catch (error) {
     if (error.name !== "AbortError") {
-      console.error(error.stack);
+      console.error("Fetch Error:", error.stack);
       throw error;
     }
     return Promise.resolve(onCancel);
@@ -80,14 +80,13 @@ export async function listReservations(params, signal) {
 
 export async function createReservation(reservation, signal) {
   const url = `${API_BASE_URL}/reservations/new`;
-  // console.log(url, reservation);
   const options = {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(reservation),
+    headers,
+    body: JSON.stringify({ data: reservation }), // Nesting reservation data under "data" key
     signal,
   };
-  return await fetchJson(url, options, {});
+  const result = await fetchJson(url, options, {});
+  console.log("fetchJson result:", result);
+  return result;
 }

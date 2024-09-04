@@ -24,7 +24,6 @@ function NewReservation() {
     event.preventDefault();
 
     try {
-      console.log(formData);
       await createReservation(formData);
       history.push(`/dashboard/${formData.reservation_date}`);
     } catch (error) {
