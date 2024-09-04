@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
 
 function NewReservation() {
@@ -29,6 +29,10 @@ function NewReservation() {
     } catch (error) {
       console.error("Error creating new reservation:", error);
     }
+  };
+
+  const handleGoBack = async () => {
+    history.goBack();
   };
 
   return (
@@ -104,10 +108,13 @@ function NewReservation() {
         <button type="submit" className="btn btn-primary my-3 mr-3">
           Submit
         </button>
-        {/* TODO set Link to previous page instead of dashboard  */}
-        <Link to="/dashboard" className="btn btn-secondary my-3">
+        <button
+          type="button"
+          className="btn btn-secondary my-3"
+          onClick={handleGoBack}
+        >
           Cancel
-        </Link>
+        </button>
       </form>
     </main>
   );
