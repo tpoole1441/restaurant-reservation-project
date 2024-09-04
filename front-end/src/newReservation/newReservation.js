@@ -10,13 +10,14 @@ function NewReservation() {
     mobile_number: "",
     reservation_date: "",
     reservation_time: "",
-    people: "",
+    people: 0,
   });
 
   const handleChange = (event) => {
+    const { name, value } = event.target;
     setFormData({
       ...formData,
-      [event.target.name]: event.target.value,
+      [name]: name === "people" ? Number(value) : value,
     });
   };
 

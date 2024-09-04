@@ -68,8 +68,7 @@ function validateReservationData(req, res, next) {
     });
   }
 
-  const peopleCount = Number(people);
-  if (!isValidNumber(peopleCount)) {
+  if (!isValidNumber(people)) {
     return next({
       status: 400,
       message: `Invalid people count: ${people}`,
