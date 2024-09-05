@@ -75,11 +75,16 @@ function validateReservationData(req, res, next) {
     });
   }
 
-  const reservationDate = new Date(reservation_date + "T00:00:00Z");
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
+  const reservationDateTime = new Date(
+    `${reservation_date}T${reservation_time}:00Z`
+  );
+  const currentDateTime = new Date();
+  currentDateTime.setHours(currentDateTime.getHours() - 5);
+  const openingTime = new Date(`${reservation_date}T10:30:00.000Z`);
+  const closingTime = new Date(`${reservation_date}T21:30:00.000Z`);
 
-  if (reservationDate.getUTCDay() === 2) {
+  // Check if reservation is on a Tuesday
+  if (reservationDateTime.getUTCDay() === 2) {
     return next({
       status: 400,
       message:
@@ -87,7 +92,16 @@ function validateReservationData(req, res, next) {
     });
   }
 
-  if (reservationDate < today) {
+  // Check if reservation time is between 10:30 AM and 9:30 PM
+  if (reservationDateTime < openingTime || reservationDateTime > closingTime) {
+    return next({
+      status: 400,
+      message: "The reservation time must be between 10:30 AM and 9:30 PM.",
+    });
+  }
+
+  // Check if reservation date is in the past
+  if (reservationDateTime < currentDateTime) {
     return next({
       status: 400,
       message:

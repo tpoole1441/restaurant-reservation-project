@@ -26,23 +26,37 @@ function NewReservation() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const reservationDate = new Date(formData.reservation_date + "T00:00:00Z");
-    const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
+    const reservationDateTime = new Date(
+      `${formData.reservation_date}T${formData.reservation_time}:00.000Z`
+    );
+    reservationDateTime.setHours(reservationDateTime.getHours() + 5);
+    const currentDateTime = new Date();
+    const openingTime = new Date(`${formData.reservation_date}T10:30:00.000Z`);
+    const closingTime = new Date(`${formData.reservation_date}T21:30:00.000Z`);
 
     const errors = [];
 
-    if (reservationDate.getUTCDay() === 2) {
+    // Check if reservation is on a Tuesday
+    if (reservationDateTime.getUTCDay() === 2) {
       errors.push(
         "The restaurant is closed on Tuesdays. Please choose a different date."
       );
     }
 
-    if (reservationDate < today) {
-      errors.push(
-        "The reservation date cannot be in the past. Please choose a future date."
-      );
-    }
+    // // Check if reservation time is between 10:30 AM and 9:30 PM
+    // if (
+    //   reservationDateTime < openingTime ||
+    //   reservationDateTime > closingTime
+    // ) {
+    //   errors.push("The reservation time must be between 10:30 AM and 9:30 PM.");
+    // }
+
+    // // Check if reservation date is in the past
+    // if (reservationDateTime < currentDateTime) {
+    //   errors.push(
+    //     "The reservation time cannot be in the past. Please choose a future time."
+    //   );
+    // }
 
     if (errors.length > 0) {
       setError(errors.join(" "));
