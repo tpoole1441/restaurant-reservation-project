@@ -83,10 +83,19 @@ export async function createReservation(reservation, signal) {
   const options = {
     method: "POST",
     headers,
-    body: JSON.stringify({ data: reservation }), // Nesting reservation data under "data" key
+    body: JSON.stringify({ data: reservation }),
     signal,
   };
-  const result = await fetchJson(url, options, {});
-  console.log("fetchJson result:", result);
-  return result;
+  return await fetchJson(url, options, {});
+}
+
+export async function createTable(table, signal) {
+  const url = `${API_BASE_URL}/tables`;
+  const options = {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ data: table }),
+    signal,
+  };
+  return await fetchJson(url, options, {});
 }

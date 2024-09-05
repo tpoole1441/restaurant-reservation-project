@@ -92,6 +92,7 @@ function NewReservation() {
           id="first_name"
           name="first_name"
           onChange={handleChange}
+          value={formData.first_name}
           required
         ></input>
         <br />
@@ -102,6 +103,7 @@ function NewReservation() {
           id="last_name"
           name="last_name"
           onChange={handleChange}
+          value={formData.last_name}
           required
         ></input>
         <br />
@@ -114,6 +116,7 @@ function NewReservation() {
           pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
           placeholder="555-555-5555"
           onChange={handleChange}
+          value={formData.mobile_number}
           required
         ></input>
         <br />
@@ -126,6 +129,7 @@ function NewReservation() {
           placeholder="YYYY-MM-DD"
           pattern="\d{4}-\d{2}-\d{2}"
           onChange={handleChange}
+          value={formData.reservation_date}
           required
         ></input>
         <br />
@@ -138,6 +142,7 @@ function NewReservation() {
           placeholder="HH:MM"
           pattern="[0-9]{2}:[0-9]{2}"
           onChange={handleChange}
+          value={formData.reservation_time}
           required
         ></input>
         <br />
@@ -148,6 +153,7 @@ function NewReservation() {
           id="people"
           name="people"
           onChange={handleChange}
+          value={formData.people}
           required
         ></input>
         <br />
