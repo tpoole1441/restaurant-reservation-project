@@ -31,8 +31,11 @@ function NewReservation() {
     );
     reservationDateTime.setHours(reservationDateTime.getHours() + 5);
     const currentDateTime = new Date();
-    const openingTime = new Date(`${formData.reservation_date}T10:30:00.000Z`);
+    const openingTime = new Date(`${formData.reservation_date}T16:30:00.000Z`);
     const closingTime = new Date(`${formData.reservation_date}T21:30:00.000Z`);
+    closingTime.setHours(closingTime.getHours() + 5);
+    console.log("reservationDateTime", reservationDateTime);
+    console.log("closingTime", closingTime);
 
     const errors = [];
 
