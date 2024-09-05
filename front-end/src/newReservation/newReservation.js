@@ -43,20 +43,20 @@ function NewReservation() {
       );
     }
 
-    // // Check if reservation time is between 10:30 AM and 9:30 PM
-    // if (
-    //   reservationDateTime < openingTime ||
-    //   reservationDateTime > closingTime
-    // ) {
-    //   errors.push("The reservation time must be between 10:30 AM and 9:30 PM.");
-    // }
+    // Check if reservation time is between 10:30 AM and 9:30 PM
+    if (
+      reservationDateTime < openingTime ||
+      reservationDateTime > closingTime
+    ) {
+      errors.push("The reservation time must be between 10:30 AM and 9:30 PM.");
+    }
 
-    // // Check if reservation date is in the past
-    // if (reservationDateTime < currentDateTime) {
-    //   errors.push(
-    //     "The reservation time cannot be in the past. Please choose a future time."
-    //   );
-    // }
+    // Check if reservation date is in the past
+    if (reservationDateTime < currentDateTime) {
+      errors.push(
+        "The reservation time cannot be in the past. Please choose a future time."
+      );
+    }
 
     if (errors.length > 0) {
       setError(errors.join(" "));
