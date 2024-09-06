@@ -1,7 +1,8 @@
 const puppeteer = require("puppeteer");
-const { setDefaultOptions } = require('expect-puppeteer');
+const { setDefaultOptions } = require("expect-puppeteer");
 const fs = require("fs");
 const fsPromises = fs.promises;
+const regeneratorRuntime = require("regenerator-runtime");
 
 const { containsText } = require("./utils");
 const { createReservation, createTable } = require("./api");

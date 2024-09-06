@@ -115,6 +115,23 @@ function capacityIsNumber(req, res, next) {
   next();
 }
 
+async function deleteTableReservation(req, res) {
+  const { table_id } = res.locals.table;
+  await tablesService.deleteReservation(table_id);
+  res.status(200).json({ data: { table_id } });
+}
+
+function isTableNotOccupied(req, res, next) {
+  const { table } = res.locals;
+  if (!table.reservation_id) {
+    return next({
+      status: 400,
+      message: `Table is not occupied.`,
+    });
+  }
+  next();
+}
+
 module.exports = {
   list: asyncErrorBoundary(list),
   update: [
@@ -129,5 +146,10 @@ module.exports = {
     tableNameLength,
     capacityIsNumber,
     asyncErrorBoundary(create),
+  ],
+  delete: [
+    asyncErrorBoundary(tableExists),
+    isTableNotOccupied,
+    asyncErrorBoundary(deleteTableReservation),
   ],
 };

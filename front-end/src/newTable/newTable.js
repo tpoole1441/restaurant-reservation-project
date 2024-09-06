@@ -9,7 +9,7 @@ function NewTable() {
     capacity: 0,
   };
   const [formData, setFormData] = React.useState({ ...initialFormData });
-  const [error, setError] = React.useState(null);
+  // const [error, setError] = React.useState(null);
 
   const handleChange = ({ target }) => {
     setFormData({
@@ -40,7 +40,7 @@ function NewTable() {
   return (
     <div>
       <h1>New Table</h1>
-      {error && <div className="alert alert-danger">{error}</div>}
+      {/* {error && <div className="alert alert-danger">{error}</div>} */}
       <form onSubmit={handleSubmit}>
         <label htmlFor="table_name">Table Name:</label>
         <br />

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import { today, previous, next } from "../utils/date-time";
-import { listReservations, listTables } from "../utils/api";
+import { listReservations, listTables, deleteTable } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
 /**
@@ -63,6 +63,20 @@ function Dashboard() {
     setDate(nextDate);
   };
 
+  const handleFinish = async (event) => {
+    event.preventDefault();
+    const confirmReadyToSeat = window.confirm(
+      "Is this table ready to seat new guests? This cannot be undone."
+    );
+    if (confirmReadyToSeat) {
+      const table_id = event.target.getAttribute("data-table-id-finish");
+      await deleteTable(table_id);
+      history.go(0);
+    } else {
+      // should do nothing
+    }
+  };
+
   return (
     <main>
       <h1>Dashboard</h1>
@@ -114,7 +128,13 @@ function Dashboard() {
         {tables.map((table) => (
           <div key={table.table_id} className={`card my-3`}>
             <div className="card-body">
-              <h5 className="card-title">{table.table_name}</h5>
+              <h5
+                className="card-title"
+                style={{ display: "flex", justifyContent: "space-between" }}
+              >
+                <span>{table.table_name}</span>
+                <span className="small">{table.capacity} seats</span>
+              </h5>
               <p className="card-text" data-table-id-status={table.table_id}>
                 Status: {table.reservation_id ? "Occupied" : "Free"}
               </p>
@@ -123,16 +143,15 @@ function Dashboard() {
                   Reservation ID: {table.reservation_id}
                 </p>
               )}
-              {!table.reservation_id && (
-                <p className="card-text">No Reservation</p>
-              )}
-              {!table.reservation_id && (
-                <a
-                  href={`/dashboard?table_id=${table.table_id}`}
-                  className="btn btn-primary"
+              {table.reservation_id && (
+                <button
+                  type="button"
+                  onClick={handleFinish}
+                  data-table-id-finish={table.table_id}
+                  className="btn btn-danger"
                 >
-                  Seat
-                </a>
+                  Finish
+                </button>
               )}
             </div>
           </div>
