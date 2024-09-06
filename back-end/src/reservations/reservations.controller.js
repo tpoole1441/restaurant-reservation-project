@@ -9,6 +9,8 @@ const hasRequiredProperties = hasProperties(
   "people"
 );
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
+// import { next } from ("../../../front-end/src/utils/date-time");
+const e = require("express");
 
 const VALID_PROPERTIES = [
   "first_name",
@@ -112,10 +114,20 @@ function validateReservationData(req, res, next) {
   next();
 }
 
-async function list(req, res) {
-  const date = req.query.date;
-  const data = await reservationsService.list(date);
-  return res.json({ data });
+async function list(req, res, next) {
+  const { date } = req.query;
+  if (!date) {
+    return next({
+      status: 400,
+      message: "date is required",
+    });
+  }
+  try {
+    const data = await reservationsService.list(date);
+    return res.json({ data });
+  } catch (error) {
+    return next(error);
+  }
 }
 
 async function create(req, res) {

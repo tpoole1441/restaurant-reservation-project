@@ -1,6 +1,9 @@
 const knex = require("../db/connection");
 
 function list(reservation_date) {
+  if (!reservation_date) {
+    throw new Error("reservation_date is required.");
+  }
   return knex("reservations")
     .select("*")
     .where({ reservation_date })

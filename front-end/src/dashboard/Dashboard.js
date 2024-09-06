@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import { today, previous, next } from "../utils/date-time";
-import { listReservations } from "../utils/api";
+import { listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
 /**
@@ -18,6 +18,19 @@ function Dashboard() {
   const queryParams = new URLSearchParams(location.search);
   const dateFromQuery = queryParams.get("date");
   const [date, setDate] = useState(dateFromQuery || today());
+  const [tables, setTables] = useState([]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    listTables(abortController.signal)
+      .then(setTables)
+      .catch((error) => {
+        if (error.name !== "AbortError") {
+          console.error("Failed to fetch tables:", error);
+        }
+      });
+    return () => abortController.abort();
+  }, []);
 
   useEffect(loadDashboard, [date]);
 
@@ -86,10 +99,49 @@ function Dashboard() {
               <p className="card-text">Mobile number: {mobile_number}</p>
               <p className="card-text">Reservation Date: {reservation_date}</p>
               <p className="card-text">Reservation Time: {reservation_time}</p>
+              <a
+                href={`/reservations/${reservation_id}/seat`}
+                className="btn btn-primary"
+              >
+                Seat
+              </a>
             </div>
           </div>
         )
       )}
+      <div>
+        <h4>Tables</h4>
+        {tables.map((table) => (
+          <div
+            key={table.table_id}
+            className={`card my-3`}
+            data-table-id-status={table.table_id}
+          >
+            <div className="card-body">
+              <h5 className="card-title">{table.table_name}</h5>
+              <p className="card-text">
+                Status: {table.reservation_id ? "Occupied" : "Free"}
+              </p>
+              {table.reservation_id && (
+                <p className="card-text">
+                  Reservation ID: {table.reservation_id}
+                </p>
+              )}
+              {!table.reservation_id && (
+                <p className="card-text">No Reservation</p>
+              )}
+              {!table.reservation_id && (
+                <a
+                  href={`/dashboard?table_id=${table.table_id}`}
+                  className="btn btn-primary"
+                >
+                  Seat
+                </a>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </main>
   );
 }
