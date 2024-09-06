@@ -133,6 +133,23 @@ async function create(req, res) {
   res.status(201).json({ data });
 }
 
+async function reservationExists(req, res, next) {
+  const { reservation_id } = req.params;
+  const reservation = await reservationsService.read(reservation_id);
+  if (!reservation) {
+    return next({
+      status: 404,
+      message: `Reservation cannot be found.`,
+    });
+  }
+  res.locals.reservation = reservation;
+  next();
+}
+
+function read(req, res) {
+  res.json({ data: res.locals.reservation });
+}
+
 module.exports = {
   list: asyncErrorBoundary(list),
   create: [
@@ -141,4 +158,5 @@ module.exports = {
     hasRequiredProperties,
     asyncErrorBoundary(create),
   ],
+  read: [asyncErrorBoundary(reservationExists), read],
 };

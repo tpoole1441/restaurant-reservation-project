@@ -67,7 +67,11 @@ function ReservationsSeat() {
         ))}
       </select>
       <br />
-      <button onClick={handleSeatReservation} className="btn btn-primary my-3">
+      <button
+        type="submit"
+        onClick={handleSeatReservation}
+        className="btn btn-primary my-3"
+      >
         Submit
       </button>
       <button onClick={handleCancel} className="btn btn-secondary m-3">

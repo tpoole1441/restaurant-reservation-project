@@ -20,9 +20,17 @@ function update(table_id, reservation_id) {
     .then((updatedRecords) => updatedRecords[0]);
 }
 
+function create(table) {
+  return knex("tables")
+    .insert(table)
+    .returning("*")
+    .then((createdRecords) => createdRecords[0]);
+}
+
 module.exports = {
   list,
   read,
   readReservation,
   update,
+  create,
 };

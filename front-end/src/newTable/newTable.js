@@ -28,7 +28,7 @@ function NewTable() {
       await createTable(table, abortController.signal);
       history.push(`/dashboard`);
     } catch (error) {
-      setError(error);
+      console.error(error);
     }
     return () => abortController.abort();
   };
