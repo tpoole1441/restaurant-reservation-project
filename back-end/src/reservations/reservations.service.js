@@ -10,6 +10,10 @@ function list(reservation_date) {
     .orderBy("reservation_time");
 }
 
+function listAll() {
+  return knex("reservations").select("*").orderBy("reservation_date");
+}
+
 function create(reservation) {
   return knex("reservations")
     .insert(reservation)
@@ -19,5 +23,6 @@ function create(reservation) {
 
 module.exports = {
   list,
+  listAll,
   create,
 };

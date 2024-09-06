@@ -40,7 +40,7 @@ function NewTable() {
   return (
     <div>
       <h1>New Table</h1>
-      {/* <ErrorAlert error={error} /> */}
+      {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>
         <label htmlFor="table_name">Table Name:</label>
         <br />

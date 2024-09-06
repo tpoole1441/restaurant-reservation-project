@@ -112,14 +112,10 @@ function Dashboard() {
       <div>
         <h4>Tables</h4>
         {tables.map((table) => (
-          <div
-            key={table.table_id}
-            className={`card my-3`}
-            data-table-id-status={table.table_id}
-          >
+          <div key={table.table_id} className={`card my-3`}>
             <div className="card-body">
               <h5 className="card-title">{table.table_name}</h5>
-              <p className="card-text">
+              <p className="card-text" data-table-id-status={table.table_id}>
                 Status: {table.reservation_id ? "Occupied" : "Free"}
               </p>
               {table.reservation_id && (

@@ -117,10 +117,8 @@ function validateReservationData(req, res, next) {
 async function list(req, res, next) {
   const { date } = req.query;
   if (!date) {
-    return next({
-      status: 400,
-      message: "date is required",
-    });
+    const data = await reservationsService.listAll();
+    return res.json({ data });
   }
   try {
     const data = await reservationsService.list(date);
