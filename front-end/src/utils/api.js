@@ -122,7 +122,6 @@ export async function updateTable(table_id, reservation_id, signal) {
     body: JSON.stringify(reservation_id),
     signal,
   };
-  console.log("Reservation ID: ", reservation_id);
   return await fetchJson(url, options, {});
 }
 
@@ -134,4 +133,22 @@ export async function deleteTable(table_id, signal) {
     signal,
   };
   return await fetchJson(url, options, {});
+}
+
+export async function reservationStatusUpdate(reservation_id, status, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}/status`;
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data: { status: status } }),
+    signal,
+  };
+  return await fetchJson(url, options, {});
+}
+
+export async function searchReservations(mobile_number, signal) {
+  const url = `${API_BASE_URL}/reservations?mobile_number=${mobile_number}`;
+  return await fetchJson(url, { headers, signal }, [])
+    .then(formatReservationDate)
+    .then(formatReservationTime);
 }

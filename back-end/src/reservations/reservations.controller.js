@@ -19,6 +19,7 @@ const VALID_PROPERTIES = [
   "reservation_date",
   "reservation_time",
   "people",
+  "status",
 ];
 
 function hasOnlyValidProperties(req, res, next) {
@@ -54,7 +55,7 @@ function isValidNumber(value) {
 function validateReservationData(req, res, next) {
   const { data = {} } = req.body;
 
-  const { reservation_date, reservation_time, people } = data;
+  const { reservation_date, reservation_time, people, status } = data;
 
   if (!isValidDate(reservation_date)) {
     return next({
@@ -111,13 +112,27 @@ function validateReservationData(req, res, next) {
     });
   }
 
+  if (status && status !== "booked") {
+    return next({
+      status: 400,
+      message: `Invalid reservation status: ${status}`,
+    });
+  }
+
   next();
 }
 
 async function list(req, res, next) {
   const { date } = req.query;
-  if (!date) {
+  const { mobile_number } = req.query;
+  console.log("Mobile number: ", mobile_number);
+  if (!date && !mobile_number) {
     const data = await reservationsService.listAll();
+    return res.json({ data });
+  }
+  if (mobile_number) {
+    console.log("Searching for mobile number: ", mobile_number);
+    const data = await reservationsService.search(mobile_number);
     return res.json({ data });
   }
   try {
@@ -139,11 +154,40 @@ async function reservationExists(req, res, next) {
   if (!reservation) {
     return next({
       status: 404,
-      message: `Reservation cannot be found.`,
+      message: `Reservation ${reservation_id} cannot be found.`,
     });
   }
   res.locals.reservation = reservation;
   next();
+}
+
+function isStatusValid(req, res, next) {
+  const { status } = req.body.data;
+  if (status === "booked" || status === "seated" || status === "finished") {
+    return next();
+  }
+  next({
+    status: 400,
+    message: `Invalid status: ${status}`,
+  });
+}
+
+function reservationStatusNotFinished(req, res, next) {
+  const { status } = res.locals.reservation;
+  if (status !== "finished") {
+    return next();
+  }
+  next({
+    status: 400,
+    message: `A finished reservation cannot be updated.`,
+  });
+}
+
+async function updateStatus(req, res) {
+  const { reservation_id } = res.locals.reservation;
+  const { status } = req.body.data;
+  const data = await reservationsService.updateStatus(reservation_id, status);
+  res.json({ data });
 }
 
 function read(req, res) {
@@ -159,4 +203,10 @@ module.exports = {
     asyncErrorBoundary(create),
   ],
   read: [asyncErrorBoundary(reservationExists), read],
+  update: [
+    asyncErrorBoundary(reservationExists),
+    isStatusValid,
+    reservationStatusNotFinished,
+    asyncErrorBoundary(updateStatus),
+  ],
 };

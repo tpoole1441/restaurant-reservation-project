@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useHistory } from "react-router-dom";
-import { today, previous, next } from "../utils/date-time";
-import { listReservations, listTables, deleteTable } from "../utils/api";
+import { today, previous, next, formatAsTime } from "../utils/date-time";
+import {
+  listReservations,
+  listTables,
+  deleteTable,
+  reservationStatusUpdate,
+} from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
 /**
@@ -63,13 +68,13 @@ function Dashboard() {
     setDate(nextDate);
   };
 
-  const handleFinish = async (event) => {
-    event.preventDefault();
+  const handleFinish = async (reservation_id, event) => {
     const confirmReadyToSeat = window.confirm(
       "Is this table ready to seat new guests? This cannot be undone."
     );
     if (confirmReadyToSeat) {
       const table_id = event.target.getAttribute("data-table-id-finish");
+      await reservationStatusUpdate(reservation_id, "finished");
       await deleteTable(table_id);
       history.go(0);
     } else {
@@ -95,34 +100,53 @@ function Dashboard() {
         </button>
       </div>
       <ErrorAlert error={reservationsError} />
-      {reservations.map(
-        ({
-          reservation_id,
-          first_name,
-          last_name,
-          mobile_number,
-          reservation_date,
-          reservation_time,
-          people,
-        }) => (
-          <div className="card my-3" key={reservation_id}>
-            <div className="card-body">
-              <h3 className="card-title">
-                {first_name} {last_name} - {people}
-              </h3>
-              <p className="card-text">Mobile number: {mobile_number}</p>
-              <p className="card-text">Reservation Date: {reservation_date}</p>
-              <p className="card-text">Reservation Time: {reservation_time}</p>
-              <a
-                href={`/reservations/${reservation_id}/seat`}
-                className="btn btn-primary"
-              >
-                Seat
-              </a>
+      {reservations
+        .filter((reservation) => reservation.status !== "finished")
+        .map(
+          ({
+            reservation_id,
+            first_name,
+            last_name,
+            mobile_number,
+            reservation_date,
+            reservation_time,
+            status,
+            people,
+          }) => (
+            <div className="card my-3" key={reservation_id}>
+              <div className="card-body">
+                <h3
+                  className="card-title"
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <span>
+                    {first_name} {last_name} - {mobile_number}
+                  </span>
+                  <span className="small">Party size: {people}</span>
+                </h3>
+                {/* <p className="card-text">Mobile number: {mobile_number}</p> */}
+                <p className="card-text">Date: {reservation_date}</p>
+                <p className="card-text">
+                  Time: {formatAsTime(reservation_time)}
+                </p>
+                <p
+                  className="card-text"
+                  data-reservation-id-status={reservation_id}
+                >
+                  Status: {status}
+                </p>
+                {status === "booked" && (
+                  <a
+                    href={`/reservations/${reservation_id}/seat`}
+                    className="btn btn-primary"
+                  >
+                    Seat
+                  </a>
+                )}
+              </div>
             </div>
-          </div>
-        )
-      )}
+          )
+        )}
       <div>
         <h4>Tables</h4>
         {tables.map((table) => (
@@ -146,7 +170,7 @@ function Dashboard() {
               {table.reservation_id && (
                 <button
                   type="button"
-                  onClick={handleFinish}
+                  onClick={(event) => handleFinish(table.reservation_id, event)}
                   data-table-id-finish={table.table_id}
                   className="btn btn-danger"
                 >
