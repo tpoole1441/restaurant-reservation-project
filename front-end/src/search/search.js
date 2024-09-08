@@ -1,5 +1,5 @@
 import React from "react";
-import { searchReservations } from "../utils/api";
+import { searchReservations, reservationStatusUpdate } from "../utils/api";
 import { formatAsTime } from "../utils/date-time";
 
 function Search() {
@@ -26,6 +26,20 @@ function Search() {
       setError(error);
     }
     return () => abortController.abort();
+  };
+
+  const handleCancel = async (reservation_id) => {
+    const confirmCancel = window.confirm(
+      "Do you want to cancel this reservation? This cannot be undone."
+    );
+    if (confirmCancel) {
+      await reservationStatusUpdate(reservation_id, "cancelled");
+      const response = await searchReservations(mobile_number);
+      setReservations(response);
+      setSearched(true);
+    } else {
+      // should do nothing
+    }
   };
 
   return (
@@ -90,11 +104,25 @@ function Search() {
                   {status === "booked" && (
                     <a
                       href={`/reservations/${reservation_id}/seat`}
-                      className="btn btn-primary"
+                      className="btn btn-primary mr-3"
                     >
                       Seat
                     </a>
                   )}
+                  <a
+                    href={`/reservations/${reservation_id}/edit`}
+                    className="btn btn-secondary mr-3"
+                  >
+                    Edit
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => handleCancel(reservation_id)}
+                    className="btn btn-danger"
+                    data-reservation-id-cancel={reservation_id}
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             )

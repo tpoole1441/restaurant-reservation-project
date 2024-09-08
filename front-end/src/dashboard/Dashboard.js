@@ -82,6 +82,18 @@ function Dashboard() {
     }
   };
 
+  const handleCancel = async (reservation_id) => {
+    const confirmCancel = window.confirm(
+      "Do you want to cancel this reservation? This cannot be undone."
+    );
+    if (confirmCancel) {
+      await reservationStatusUpdate(reservation_id, "cancelled");
+      history.go(0);
+    } else {
+      // should do nothing
+    }
+  };
+
   return (
     <main>
       <h1>Dashboard</h1>
@@ -101,7 +113,11 @@ function Dashboard() {
       </div>
       <ErrorAlert error={reservationsError} />
       {reservations
-        .filter((reservation) => reservation.status !== "finished")
+        .filter(
+          (reservation) =>
+            reservation.status !== "finished" &&
+            reservation.status !== "cancelled"
+        )
         .map(
           ({
             reservation_id,
@@ -138,11 +154,25 @@ function Dashboard() {
                 {status === "booked" && (
                   <a
                     href={`/reservations/${reservation_id}/seat`}
-                    className="btn btn-primary"
+                    className="btn btn-primary mr-3"
                   >
                     Seat
                   </a>
                 )}
+                <a
+                  href={`/reservations/${reservation_id}/edit`}
+                  className="btn btn-secondary mr-3"
+                >
+                  Edit
+                </a>
+                <button
+                  type="button"
+                  onClick={() => handleCancel(reservation_id)}
+                  className="btn btn-danger"
+                  data-reservation-id-cancel={reservation_id}
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           )

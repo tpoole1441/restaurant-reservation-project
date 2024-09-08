@@ -3,7 +3,9 @@
  * The default values is overridden by the `API_BASE_URL` environment variable.
  */
 import formatReservationDate from "./format-reservation-date";
+// const formatReservationDate = require("./format-reservation-date");
 import formatReservationTime from "./format-reservation-date";
+// const formatReservationTime = require("./format-reservation-date");
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5001";
@@ -47,7 +49,7 @@ async function fetchJson(url, options, onCancel) {
     return payload.data;
   } catch (error) {
     if (error.name !== "AbortError") {
-      console.error("Fetch Error:", error.stack);
+      console.error("Fetch Error:", error.message);
       throw error;
     }
     return Promise.resolve(onCancel);
@@ -65,6 +67,13 @@ export async function listReservations(params, signal) {
   Object.entries(params).forEach(([key, value]) =>
     url.searchParams.append(key, value.toString())
   );
+  return await fetchJson(url, { headers, signal }, [])
+    .then(formatReservationDate)
+    .then(formatReservationTime);
+}
+
+export async function findReservation(reservation_id, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}`;
   return await fetchJson(url, { headers, signal }, [])
     .then(formatReservationDate)
     .then(formatReservationTime);
@@ -120,6 +129,17 @@ export async function updateTable(table_id, reservation_id, signal) {
     method: "PUT",
     headers,
     body: JSON.stringify(reservation_id),
+    signal,
+  };
+  return await fetchJson(url, options, {});
+}
+
+export async function updateReservation(reservation_id, formData, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}`;
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data: formData }),
     signal,
   };
   return await fetchJson(url, options, {});

@@ -9,8 +9,7 @@ const hasRequiredProperties = hasProperties(
   "people"
 );
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
-// import { next } from ("../../../front-end/src/utils/date-time");
-const e = require("express");
+// const e = require("express");
 
 const VALID_PROPERTIES = [
   "first_name",
@@ -22,11 +21,38 @@ const VALID_PROPERTIES = [
   "status",
 ];
 
+const VALID_UPDATE_PROPERTIES = [
+  "reservation_id",
+  "first_name",
+  "last_name",
+  "mobile_number",
+  "reservation_date",
+  "reservation_time",
+  "people",
+  "status",
+  "created_at",
+  "updated_at",
+];
+
 function hasOnlyValidProperties(req, res, next) {
   const { data = {} } = req.body;
-
   const invalidFields = Object.keys(data).filter(
     (field) => !VALID_PROPERTIES.includes(field)
+  );
+
+  if (invalidFields.length) {
+    return next({
+      status: 400,
+      message: `Invalid field(s): ${invalidFields.join(", ")}`,
+    });
+  }
+  next();
+}
+
+function hasOnlyValidUpdateProperties(req, res, next) {
+  const { data = {} } = req.body;
+  const invalidFields = Object.keys(data).filter(
+    (field) => !VALID_UPDATE_PROPERTIES.includes(field)
   );
 
   if (invalidFields.length) {
@@ -125,13 +151,11 @@ function validateReservationData(req, res, next) {
 async function list(req, res, next) {
   const { date } = req.query;
   const { mobile_number } = req.query;
-  console.log("Mobile number: ", mobile_number);
   if (!date && !mobile_number) {
     const data = await reservationsService.listAll();
     return res.json({ data });
   }
   if (mobile_number) {
-    console.log("Searching for mobile number: ", mobile_number);
     const data = await reservationsService.search(mobile_number);
     return res.json({ data });
   }
@@ -163,7 +187,12 @@ async function reservationExists(req, res, next) {
 
 function isStatusValid(req, res, next) {
   const { status } = req.body.data;
-  if (status === "booked" || status === "seated" || status === "finished") {
+  if (
+    status === "booked" ||
+    status === "seated" ||
+    status === "finished" ||
+    status === "cancelled"
+  ) {
     return next();
   }
   next({
@@ -181,6 +210,15 @@ function reservationStatusNotFinished(req, res, next) {
     status: 400,
     message: `A finished reservation cannot be updated.`,
   });
+}
+
+async function updateReservation(req, res) {
+  const { reservation_id } = res.locals.reservation;
+  const data = await reservationsService.updateReservation(
+    reservation_id,
+    req.body.data
+  );
+  res.json({ data });
 }
 
 async function updateStatus(req, res) {
@@ -208,5 +246,12 @@ module.exports = {
     isStatusValid,
     reservationStatusNotFinished,
     asyncErrorBoundary(updateStatus),
+  ],
+  updateReservation: [
+    asyncErrorBoundary(reservationExists),
+    hasOnlyValidUpdateProperties,
+    validateReservationData,
+    hasRequiredProperties,
+    asyncErrorBoundary(updateReservation),
   ],
 };
