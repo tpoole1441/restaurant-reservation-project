@@ -88,10 +88,11 @@ function EditReservation() {
     setError(null);
 
     try {
-      await updateReservation(reservation_id, formData);
+      const abortController = new AbortController();
+      await updateReservation(reservation_id, formData, abortController.signal);
       history.push(`/dashboard?date=${formData.reservation_date}`);
     } catch (error) {
-      console.error("Error creating new reservation:", error);
+      console.error("Error updating reservation:", error);
     }
   };
 

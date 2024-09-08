@@ -74,9 +74,24 @@ function Dashboard() {
     );
     if (confirmReadyToSeat) {
       const table_id = event.target.getAttribute("data-table-id-finish");
-      await reservationStatusUpdate(reservation_id, "finished");
-      await deleteTable(table_id);
-      history.go(0);
+      const abortController = new AbortController();
+      try {
+        await reservationStatusUpdate(
+          reservation_id,
+          "finished",
+          abortController.signal
+        );
+        await deleteTable(table_id, abortController.signal);
+        history.go(0);
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.error(
+            "Failed to update reservation status or delete table:",
+            error
+          );
+        }
+      }
+      return () => abortController.abort();
     } else {
       // should do nothing
     }
@@ -87,8 +102,20 @@ function Dashboard() {
       "Do you want to cancel this reservation? This cannot be undone."
     );
     if (confirmCancel) {
-      await reservationStatusUpdate(reservation_id, "cancelled");
-      history.go(0);
+      const abortController = new AbortController();
+      try {
+        await reservationStatusUpdate(
+          reservation_id,
+          "cancelled",
+          abortController.signal
+        );
+        history.go(0);
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.error("Failed to update reservation status:", error);
+        }
+      }
+      return () => abortController.abort();
     } else {
       // should do nothing
     }
