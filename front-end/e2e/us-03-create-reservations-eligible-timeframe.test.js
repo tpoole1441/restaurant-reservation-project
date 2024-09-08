@@ -3,6 +3,7 @@ const { setDefaultOptions } = require("expect-puppeteer");
 const fs = require("fs");
 const fsPromises = fs.promises;
 import "@babel/polyfill";
+const regeneratorRuntime = require("regenerator-runtime");
 
 const baseURL = process.env.BASE_URL || "http://localhost:3000";
 

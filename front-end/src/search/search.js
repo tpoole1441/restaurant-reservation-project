@@ -33,7 +33,12 @@ function Search() {
       "Do you want to cancel this reservation? This cannot be undone."
     );
     if (confirmCancel) {
-      await reservationStatusUpdate(reservation_id, "cancelled");
+      const abortController = new AbortController();
+      await reservationStatusUpdate(
+        reservation_id,
+        "cancelled",
+        abortController.signal
+      );
       const response = await searchReservations(mobile_number);
       setReservations(response);
       setSearched(true);

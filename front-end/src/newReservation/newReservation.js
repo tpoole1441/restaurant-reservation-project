@@ -69,7 +69,8 @@ function NewReservation() {
     setError(null);
 
     try {
-      await createReservation(formData);
+      const abortController = new AbortController();
+      await createReservation(formData, abortController.signal);
       history.push(`/dashboard/?date=${formData.reservation_date}`);
     } catch (error) {
       console.error("Error creating new reservation:", error);

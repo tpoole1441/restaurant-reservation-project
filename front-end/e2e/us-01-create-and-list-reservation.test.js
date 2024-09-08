@@ -2,6 +2,7 @@ const puppeteer = require("puppeteer");
 const { setDefaultOptions } = require("expect-puppeteer");
 const fs = require("fs");
 const fsPromises = fs.promises;
+const regeneratorRuntime = require("regenerator-runtime");
 
 const baseURL = process.env.BASE_URL || "http://localhost:3000";
 

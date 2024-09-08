@@ -12,9 +12,10 @@ function NewTable() {
   // const [error, setError] = React.useState(null);
 
   const handleChange = ({ target }) => {
+    const { name, value } = target;
     setFormData({
       ...formData,
-      [target.name]: target.value,
+      [name]: name === "capacity" ? Number(value) : value,
     });
   };
 

@@ -42,7 +42,8 @@ function ReservationsSeat() {
       },
     };
 
-    updateTable(selectedTableId, requestBody)
+    const abortController = new AbortController();
+    updateTable(selectedTableId, requestBody, abortController.signal)
       .then(() => {
         history.push("/dashboard");
       })
