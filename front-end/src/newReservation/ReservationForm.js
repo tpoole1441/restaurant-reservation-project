@@ -1,166 +1,98 @@
-import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import { createReservation, updateReservation } from "../utils/api";
+import React from "react";
 
-function ReservationForm({ initialData = {}, isEdit = false }) {
-  const history = useHistory();
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    mobile_number: "",
-    reservation_date: "",
-    reservation_time: "",
-    people: 0,
-    ...initialData,
-  });
-
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    setFormData((prevData) => ({
-      ...prevData,
-      ...initialData,
-    }));
-  }, [initialData]);
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({
-      ...formData,
-      [name]: name === "people" ? Number(value) : value,
-    });
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    const reservationDateTime = new Date(
-      `${formData.reservation_date}T${formData.reservation_time}:00.000Z`
-    );
-    reservationDateTime.setHours(reservationDateTime.getHours() + 5);
-    const currentDateTime = new Date();
-    const openingTime = new Date(`${formData.reservation_date}T16:30:00.000Z`);
-    const closingTime = new Date(`${formData.reservation_date}T21:30:00.000Z`);
-
-    const errors = [];
-    if (reservationDateTime < currentDateTime) {
-      errors.push(
-        "The reservation time cannot be in the past. Please choose a future time."
-      );
-    }
-
-    if (
-      reservationDateTime < openingTime ||
-      reservationDateTime > closingTime
-    ) {
-      errors.push("Reservation time must be between 16:30 and 21:30.");
-    }
-
-    if (errors.length > 0) {
-      setError(errors.join(" "));
-      return;
-    }
-
-    setError(null);
-
-    try {
-      if (isEdit) {
-        await updateReservation(formData.reservation_id, formData);
-      } else {
-        await createReservation(formData);
-      }
-      history.push(`/dashboard?date=${formData.reservation_date}`);
-    } catch (error) {
-      console.error("Error saving reservation:", error);
-      setError(error.message);
-    }
-  };
-
-  const handleGoBack = () => {
-    history.goBack();
-  };
-
+function ReservationForm({
+  reservation,
+  formData,
+  handleChange,
+  handleSubmit,
+  handleGoBack,
+}) {
   return (
     <form onSubmit={handleSubmit}>
-      {error && <div className="alert alert-danger">{error}</div>}
-      <div className="form-group">
-        <label htmlFor="first_name">First Name</label>
-        <input
-          type="text"
-          className="form-control"
-          id="first_name"
-          name="first_name"
-          value={formData.first_name}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="last_name">Last Name</label>
-        <input
-          type="text"
-          className="form-control"
-          id="last_name"
-          name="last_name"
-          value={formData.last_name}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="mobile_number">Mobile Number</label>
-        <input
-          type="tel"
-          className="form-control"
-          id="mobile_number"
-          name="mobile_number"
-          value={formData.mobile_number}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="reservation_date">Reservation Date</label>
-        <input
-          type="date"
-          className="form-control"
-          id="reservation_date"
-          name="reservation_date"
-          value={formData.reservation_date}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="reservation_time">Reservation Time</label>
-        <input
-          type="time"
-          className="form-control"
-          id="reservation_time"
-          name="reservation_time"
-          value={formData.reservation_time}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="people">People</label>
-        <input
-          type="number"
-          className="form-control"
-          id="people"
-          name="people"
-          value={formData.people}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <button type="submit" className="btn btn-primary">
+      <label>First Name</label>
+      <br />
+      <input
+        type="text"
+        id="first_name"
+        name="first_name"
+        onChange={handleChange}
+        value={formData.first_name}
+        disabled={reservation.status && reservation.status !== "booked"}
+        required
+      ></input>
+      <br />
+      <label>Last Name</label>
+      <br />
+      <input
+        type="text"
+        id="last_name"
+        name="last_name"
+        onChange={handleChange}
+        value={formData.last_name}
+        disabled={reservation.status && reservation.status !== "booked"}
+        required
+      ></input>
+      <br />
+      <label>Mobile Number</label>
+      <br />
+      <input
+        type="text"
+        id="mobile_number"
+        name="mobile_number"
+        pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+        placeholder="555-555-5555"
+        onChange={handleChange}
+        value={formData.mobile_number}
+        disabled={reservation.status && reservation.status !== "booked"}
+        required
+      ></input>
+      <br />
+      <label>Reservation Date</label>
+      <br />
+      <input
+        type="text"
+        id="reservation_date"
+        name="reservation_date"
+        placeholder="YYYY-MM-DD"
+        pattern="\d{4}-\d{2}-\d{2}"
+        onChange={handleChange}
+        value={formData.reservation_date}
+        disabled={reservation.status && reservation.status !== "booked"}
+        required
+      ></input>
+      <br />
+      <label>Reservation Time</label>
+      <br />
+      <input
+        type="time"
+        id="reservation_time"
+        name="reservation_time"
+        placeholder="HH:MM"
+        pattern="[0-9]{2}:[0-9]{2}"
+        onChange={handleChange}
+        value={formData.reservation_time}
+        disabled={reservation.status && reservation.status !== "booked"}
+        required
+      ></input>
+      <br />
+      <label>Number of people in party</label>
+      <br />
+      <input
+        type="number"
+        id="people"
+        name="people"
+        onChange={handleChange}
+        value={formData.people}
+        disabled={reservation.status && reservation.status !== "booked"}
+        required
+      ></input>
+      <br />
+      <button type="submit" className="btn btn-primary my-3 mr-3">
         Submit
       </button>
       <button
         type="button"
-        className="btn btn-secondary"
+        className="btn btn-secondary my-3"
         onClick={handleGoBack}
       >
         Cancel
