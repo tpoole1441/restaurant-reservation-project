@@ -31,6 +31,9 @@ function NewReservation() {
     const reservationDateTime = new Date(
       `${formData.reservation_date}T${formData.reservation_time}:00.000Z`
     );
+    const reservationDay = new Date(
+      `${formData.reservation_date}T12:00:00.000Z`
+    );
     const currentDateTime = new Date();
     const openingTime = new Date(`${formData.reservation_date}T10:30:00.000Z`);
     const closingTime = new Date(`${formData.reservation_date}T21:30:00.000Z`);
@@ -52,7 +55,7 @@ function NewReservation() {
     }
 
     // Check if reservation is on a Tuesday
-    if (reservationDateTime.getUTCDay() === 2) {
+    if (reservationDay.getUTCDay() === 2) {
       errors.push(
         "The restaurant is closed on Tuesdays. Please choose a different date."
       );
