@@ -9,7 +9,7 @@ function NewTable() {
     capacity: 0,
   };
   const [formData, setFormData] = React.useState({ ...initialFormData });
-  // const [error, setError] = React.useState(null);
+  const [error, setError] = React.useState(null);
 
   const handleChange = ({ target }) => {
     const { name, value } = target;
@@ -21,6 +21,24 @@ function NewTable() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const errors = [];
+
+    if (formData.capacity < 1) {
+      errors.push("Capacity must be at least 1.");
+    }
+
+    if (formData.table_name.length < 2) {
+      errors.push("Table name must be at least 2 characters.");
+    }
+
+    if (errors.length > 0) {
+      setError(errors.join(" "));
+      return;
+    }
+
+    setError(null);
+
     const abortController = new AbortController();
     const table = {
       data: { ...formData },
@@ -41,7 +59,7 @@ function NewTable() {
   return (
     <div>
       <h1>New Table</h1>
-      {/* {error && <div className="alert alert-danger">{error}</div>} */}
+      {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>
         <label htmlFor="table_name">Table Name:</label>
         <br />
