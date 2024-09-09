@@ -50,7 +50,7 @@ function ReservationForm({
       <label>Reservation Date</label>
       <br />
       <input
-        type="text"
+        type="date"
         id="reservation_date"
         name="reservation_date"
         placeholder="YYYY-MM-DD"

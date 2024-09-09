@@ -31,13 +31,25 @@ function NewReservation() {
     const reservationDateTime = new Date(
       `${formData.reservation_date}T${formData.reservation_time}:00.000Z`
     );
-    reservationDateTime.setHours(reservationDateTime.getHours() + 5);
     const currentDateTime = new Date();
-    const openingTime = new Date(`${formData.reservation_date}T16:30:00.000Z`);
+    const openingTime = new Date(`${formData.reservation_date}T10:30:00.000Z`);
     const closingTime = new Date(`${formData.reservation_date}T21:30:00.000Z`);
-    closingTime.setHours(closingTime.getHours() + 5);
+
+    // Adjust reservationDateTime to local time zone
+    reservationDateTime.setHours(
+      reservationDateTime.getHours() + getTimeZoneOffset()
+    );
+
+    // Adjust openingTime and closingTime to local time zone
+    openingTime.setHours(openingTime.getHours() + getTimeZoneOffset());
+    closingTime.setHours(closingTime.getHours() + getTimeZoneOffset());
 
     const errors = [];
+
+    function getTimeZoneOffset() {
+      const offsetInMinutes = new Date().getTimezoneOffset();
+      return offsetInMinutes / 60;
+    }
 
     // Check if reservation is on a Tuesday
     if (reservationDateTime.getUTCDay() === 2) {
