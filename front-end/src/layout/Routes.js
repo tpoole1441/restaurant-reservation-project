@@ -22,13 +22,13 @@ function Routes() {
       <Route exact={true} path="/">
         <Redirect to={"/dashboard"} />
       </Route>
-      {/* <Route exact={true} path="/reservations">
+      <Route exact={true} path="/reservations">
         <Redirect to={"/dashboard"} />
-      </Route> */}
+      </Route>
       <Route path="/dashboard">
         <Dashboard />
       </Route>
-      {/* <Route exact={true} path="/reservations/new">
+      <Route exact={true} path="/reservations/new">
         <NewReservation />
       </Route>
       <Route exact={true} path="/reservations/:reservation_id/seat">
@@ -45,7 +45,7 @@ function Routes() {
       </Route>
       <Route>
         <NotFound />
-      </Route> */}
+      </Route>
     </Switch>
   );
 }
